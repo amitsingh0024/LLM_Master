@@ -11,6 +11,7 @@ MAX_GRAD_NORM = 1.0 # Added for gradient clipping
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 DATA_DIR = os.path.join(BASE_DIR, 'dataset')
 CHECKPOINTS_DIR = os.path.join(BASE_DIR, 'models', 'checkpoints') # New checkpoints directory
+TENSORBOARD_LOG_DIR = os.path.join(BASE_DIR, 'runs') # New TensorBoard log directory
 
 # Model parameters
 d_model = 64

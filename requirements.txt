@@ -1,4 +1,15 @@
-requests
-nltk
-torch
-matplotlib 
+# Machine Learning Frameworks
+torch==2.7.1
+
+# Data Handling
+numpy==2.3.0
+
+# Natural Language Processing
+nltk==3.9.1
+
+# Utilities
+tqdm==4.67.1
+
+# Visualization
+matplotlib==3.10.3
+tensorboard 
