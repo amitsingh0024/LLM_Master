@@ -7,16 +7,17 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 from dataset.dataloader import DataLoader
 from src.model import TransformerConfig, Narayana
-from src.config import SEQ_LEN, BATCH_SIZE, EPOCHS, LR, DATA_DIR, d_model, n_heads, d_ff, MAX_GRAD_NORM
+from src.config import SEQ_LEN, BATCH_SIZE, EPOCHS, LR, DATA_DIR, d_model, n_heads, d_ff, MAX_GRAD_NORM, CHECKPOINT_INTERVAL, CHECKPOINTS_DIR
 
-# Prepare logging file
+# Prepare logging file and model directories
 MODELS_DIR = os.path.join(os.path.dirname(__file__), '..', 'models')
 os.makedirs(MODELS_DIR, exist_ok=True) # Ensure models directory exists
+os.makedirs(CHECKPOINTS_DIR, exist_ok=True) # Ensure checkpoints directory exists
 log_file_path = os.path.join(MODELS_DIR, 'training_log.txt')
 
 with open(log_file_path, 'w') as log_f:
     log_f.write("Training Log\n")
-    log_f.write(f"Hyperparameters: SEQ_LEN={SEQ_LEN}, BATCH_SIZE={BATCH_SIZE}, EPOCHS={EPOCHS}, LR={LR}, MAX_GRAD_NORM={MAX_GRAD_NORM}\n")
+    log_f.write(f"Hyperparameters: SEQ_LEN={SEQ_LEN}, BATCH_SIZE={BATCH_SIZE}, EPOCHS={EPOCHS}, LR={LR}, MAX_GRAD_NORM={MAX_GRAD_NORM}, CHECKPOINT_INTERVAL={CHECKPOINT_INTERVAL}\n")
     log_f.write(f"Model Config: d_model={d_model}, n_heads={n_heads}, d_ff={d_ff}\n")
     log_f.write("-----------------------------------------------------\n")
 
@@ -80,6 +81,13 @@ with open(log_file_path, 'w') as log_f:
         if (epoch + 1) % 100 == 0:
             print(log_message)
 
+        # Save checkpoint every CHECKPOINT_INTERVAL epochs
+        if (epoch + 1) % CHECKPOINT_INTERVAL == 0:
+            checkpoint_path = os.path.join(CHECKPOINTS_DIR, f'narayana_epoch_{epoch+1}.pkl')
+            model.save(checkpoint_path)
+            log_f.write(f"Checkpoint saved at epoch {epoch+1} to {checkpoint_path}\n")
+            print(f"Checkpoint saved at epoch {epoch+1}")
+
     print("Training complete.")
 
     # Plotting the loss
@@ -95,6 +103,6 @@ with open(log_file_path, 'w') as log_f:
     plt.close() # Close the plot to free memory
     print(f"Loss plot saved to {plot_path}")
 
-# Save model weights to 'models' directory (outside with block)
+# Save final model weights to 'models' directory (outside with block)
 model.save(os.path.join(MODELS_DIR, 'narayana_weights.pkl'))
-print("Model saved.") 
+print("Final model saved.") 
