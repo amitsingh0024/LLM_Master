@@ -19,6 +19,7 @@ n_heads = 2
 d_ff = 128
 N_BLOCKS = 2 # Number of Transformer blocks
 CHECKPOINT_INTERVAL = 10 # Save model every 10 epochs
+DROPOUT_RATE = 0.1 # New dropout rate
 
 # Model parameters
 d_model = 64

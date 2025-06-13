@@ -16,10 +16,11 @@ Narayana is a custom-built, word-level Transformer-based Large Language Model (L
     -   Feed-Forward Networks
     -   Layer Normalization (Pre-normalization)
     -   Multiple Transformer Blocks (configurable via `N_BLOCKS` in `config.py`)
--   **Training Loop:** Basic training loop using PyTorch's `Adam` optimizer and `CrossEntropyLoss` with gradient clipping.
--   **Model Persistence:** Save and load model weights using PyTorch's `state_dict`.
+-   **Dropout Regularization:** Added dropout layers for better model generalization.
+-   **Device Handling:** Automatic detection and utilization of CUDA, MPS (Apple Silicon), or CPU for training.
+-   **Improved Logging:** Detailed logging of training loss, accuracy, and learning rate to TensorBoard, along with console output.
+-   **Full Training State Persistence:** Ability to save and load the complete training state (model weights, optimizer state, current epoch) for seamless training resumption.
 -   **Text Generation:** Script for generating new text based on a trained model and a given prompt.
--   **Loss Logging & Plotting:** Tracks and visualizes training loss over epochs.
 
 ## Installation
 
@@ -64,11 +65,16 @@ Follow these steps to run the LLM pipeline:
     This will create `dataset/vocab.pkl` and `dataset/sequences.pkl`.
 
 3.  **Train the Model:**
-    This script trains the Narayana LLM. Training progress is logged to `models/training_log.txt`, and a loss plot is saved as `models/loss_plot.png`.
+    This script trains the Narayana LLM. Training progress is logged to TensorBoard.
     ```bash
     python -m src.train
     ```
-    Trained model weights will be saved as `models/narayana_weights.pkl`.
+    To resume training from a checkpoint:
+    ```bash
+    python -m src.train --load_checkpoint models/checkpoints/narayana_epoch_X.pt
+    ```
+    (Replace `X` with the desired epoch number. Checkpoints are saved every `CHECKPOINT_INTERVAL` epochs.)
+    Trained model weights and training states will be saved as `.pt` files in `models/checkpoints/` and the final model as `models/narayana_weights.pt`.
 
 4.  **Generate Text:**
     After training, use this script to generate text based on a prompt.
@@ -90,9 +96,9 @@ LLM_Master/
 │   └── sequences.pkl         # Preprocessed sequences of token IDs
 │   └── vocab.pkl             # Word-to-index and index-to-word mappings
 ├── models/                   # Directory for saving trained model weights and logs
-│   ├── narayana_weights.pkl  # Trained model weights (ignored by Git)
-│   ├── loss_plot.png         # Plot of training loss over epochs (ignored by Git)
-│   └── training_log.txt      # Log of training loss per step/epoch (ignored by Git)
+│   ├── checkpoints/          # Saved training checkpoints (*.pt)
+│   ├── narayana_weights.pt   # Final trained model weights
+│   └── runs/                 # TensorBoard log directories
 ├── src/                      # Source code for the Narayana LLM
 │   ├── __init__.py           # Makes 'src' a Python package
 │   ├── config.py             # Centralized hyperparameters and configurations
@@ -124,7 +130,7 @@ The model has been successfully migrated to PyTorch, and initial training shows 
 -   **Longer Training:** Train for more epochs to achieve better convergence and generation quality.
 -   **Hyperparameter Tuning:** Experiment with different learning rates, batch sizes, and model dimensions.
 -   **Larger Dataset:** Utilize a more extensive and diverse dataset for training.
--   **GPU Acceleration:** Optimize training for GPU usage to speed up computation.
+-   **GPU Acceleration:** Further optimization for GPU usage to speed up computation.
 -   **Beam Search/Sampling:** Implement more advanced text generation strategies.
 -   **Evaluation Metrics:** Incorporate quantitative evaluation metrics (e.g., perplexity).
 -   **Deployment:** Explore options for deploying the trained model. 
